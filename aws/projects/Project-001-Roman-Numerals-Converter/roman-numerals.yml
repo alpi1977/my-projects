@@ -3,7 +3,7 @@ Description: |
     CloudFormation Template for Roman Numerals Converter Application.
 Parameters:
   KeyName:
-    Description: 
+    Description: Enter the name of your Key Pair for SSH connections
     Type: AWS::EC2::KeyPair::KeyName
   
   LatestAmiId:
