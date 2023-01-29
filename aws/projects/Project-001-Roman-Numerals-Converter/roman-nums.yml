@@ -1,30 +1,27 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: |
-  CloudFormation Template for Roman Numerals Converter Application.
-  This is for my portfolio folder.
-
+    CloudFormation Template for Roman Numerals Converter Application.
 Parameters:
   KeyName:
     Description: Enter the name of your Key Pair for SSH connections
-    Type: AWS::EC2::Image::Id
-
+    Type: AWS::EC2::KeyPair::KeyName
+  
   LatestAmiId:
     Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
     Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
 
 Resources:
-  WebServerSecurityGroup:
+  WebServerSecurityGroup:  
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enable HTTP for Flask Web Server and SSH port to secure reach to my EC2
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 80 
+          FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
-
         - IpProtocol: tcp
-          FromPort: 22 
+          FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
 
@@ -35,30 +32,21 @@ Resources:
       InstanceType: t2.micro
       KeyName: !Ref KeyName
       SecurityGroupIds:
-        !Ref WebServerSecurityGroup
-      Tags:
-        - Key: Name
-          Value: !Sub Web Server of ${AWS::StackName} Stack
+        - !Ref WebServerSecurityGroup
       UserData: !Base64 |
-
-        #!/bin/bash
+        #!/bin/bash 
         yum update -y
         yum install python3 -y
         pip3 install flask
         cd /home/ec2-user
         FOLDER="https://raw.githubusercontent.com/alpi1977/my-projects/main/aws/projects/Project-001-Roman-Numerals-Converter"
         wget ${FOLDER}/app.py
-        mkdir templates 
+        mkdir templates
         cd templates
         wget ${FOLDER}/templates/index.html
         wget ${FOLDER}/templates/result.html
         cd ..
         python3 app.py
-
-
-Outputs:
-  WebsiteURL:
-    Value: !Sub
-      - http://${PublicAddress}
-      - PublicAddress: !GetAtt WebServerHost.PublicDnsName
-    Description: Roman Numerals Converter Application URL
+      Tags:
+        - Key: Name
+          Value: !Sub Web Server of ${AWS::StackName} Stack
